@@ -1,0 +1,3 @@
+include friendintersect/config/deployment.ini_tmpl
+recursive-include friendintersect/public *
+recursive-include friendintersect/templates *
