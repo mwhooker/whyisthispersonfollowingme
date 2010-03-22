@@ -1,8 +1,8 @@
 from restkit import Resource, ConnectionPool, BasicAuth
+from pylons import config
 import json
 
 pool = ConnectionPool(max_connections=5)
-#auth = BasicAuth("username", "password")
 
 class TwitterSocialGraph(Resource):
 
@@ -28,4 +28,35 @@ class TwitterSocialGraph(Resource):
         return json.loads(resp.body)
 
 
+class TwitterUsers(Resource):
+
+
+    def __init__(self,  pool_instance=None, **kwargs):
+        url = "http://api.twitter.com/1/users/"
+        super(TwitterUsers, self).__init__(url, follow_redirect=True,
+                                            max_follow_redirect=10,
+                                            pool_instance=pool_instance,
+                                            **kwargs)
+    def Lookup(self, ids):
+        def chunks(l, n):
+            """ Yield successive n-sized chunks from l."""
+            for i in xrange(0, len(l), n):
+                yield l[i:i+n]
+
+        #need to break up the requests in to groups of 20 ids
+        id_chunks = list(chunks(ids, 20))
+
+        people = []
+        for ids in id_chunks:
+            people.append(self.get('lookup.json', user_id=','.join(map(str,ids))))
+        return people
+
+    def request(self, *args, **kwargs):
+        resp = super(TwitterUsers, self).request(*args, **kwargs)
+        return json.loads(resp.body)
+
+
+auth = BasicAuth(config.get('twitter.username'), config.get('twitter.password'))
+
+peeps = TwitterUsers(pool, filters=[auth])
 thesocial = TwitterSocialGraph(pool)
