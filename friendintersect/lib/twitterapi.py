@@ -55,8 +55,22 @@ class TwitterUsers(Resource):
         resp = super(TwitterUsers, self).request(*args, **kwargs)
         return json.loads(resp.body)
 
+class TwitterRateLimit(Resource):
+    
+
+    def __init__(self, pool_instance=None, **kwargs):
+        url = "http://api.twitter.com/1/account/rate_limit_status.json"
+        super(TwitterRateLimit, self).__init__(url, follow_redirect=True,
+                                            max_follow_redirect=10,
+                                            pool_instance=pool_instance,
+                                            **kwargs)
+    
+    def request(self, *args, **kwargs):
+        resp = super(TwitterRateLimit, self).request(*args, **kwargs)
+        return json.loads(resp.body)
 
 auth = BasicAuth(config.get('twitter.username'), config.get('twitter.password'))
 
 peeps = TwitterUsers(pool, filters=[auth])
 thesocial = TwitterSocialGraph(pool)
+nolimits = TwitterRateLimit(pool)

@@ -4,7 +4,7 @@ from pylons import url, config, request, response, session, tmpl_context as c
 from pylons.controllers.util import abort, redirect_to
 
 from friendintersect.lib.base import BaseController, render
-from friendintersect.lib.twitterapi import thesocial, peeps
+from friendintersect.lib.twitterapi import thesocial, peeps, nolimits
 
 import json
 
@@ -67,7 +67,7 @@ class IntersectsController(BaseController):
         intersects = {'FFM': peeps.Lookup(list(FFM)), 'FIF':
                       peeps.Lookup(list(FIF))}
 
-        #log.debug("intersects for %s and %s: %s", % (id, their_id, intersects))
+        log.info("remaining requests: %s" % nolimits.get())
 
         if 'paste.testing_variables' in request.environ:
             request.environ['paste.testing_variables']['intersects'] = intersects
