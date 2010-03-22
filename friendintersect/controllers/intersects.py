@@ -4,22 +4,12 @@ from pylons import url, config, request, response, session, tmpl_context as c
 from pylons.controllers.util import abort, redirect_to
 
 from friendintersect.lib.base import BaseController, render
-from friendintersect.lib import twitterapi; twitterapi.patch_user()
-import twitter
+from friendintersect.lib.twitterapi import thesocial
 
 import json
 
-api = twitter.Api(username=config.get('twitter.username'),
-                  password=config.get('twitter.password'))
-
 
 log = logging.getLogger(__name__)
-
-class TwitterUserEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, twitter.User):
-            return obj.AsDict()
-        return json.JSONEncoder.default(self, obj)
 
 class IntersectsController(BaseController):
     """REST Controller styled on the Atom Publishing Protocol"""
@@ -66,24 +56,22 @@ class IntersectsController(BaseController):
         if their_id is None:
             abort(400)
 
-        my_friends = set(api.GetFriends(id))
-        my_followers = set(api.GetFollowers(id))
-        print my_followers
+        my_friends = set(thesocial.GetFriends(id))
+        my_followers = set(thesocial.GetFollowers(id))
 
-        their_friends = set(api.GetFriends(their_id))
-        #their_follows = api.GetFollowers(their_id)
+        their_friends = set(thesocial.GetFriends(their_id))
 
         FFM = their_friends.intersection(my_followers)
         FIF = their_friends.intersection(my_friends)
 
         intersects = {'FFM': list(FFM), 'FIF': list(FIF)}
 
+        #log.debug("intersects for %s and %s: %s", % (id, their_id, intersects))
+
         if 'paste.testing_variables' in request.environ:
             request.environ['paste.testing_variables']['intersects'] = intersects
 
-        return TwitterUserEncoder().encode(intersects)
-        
-        
+        return json.dumps(intersects)
 
         
 

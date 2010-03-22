@@ -1,21 +1,31 @@
-from pylons import config
-from twitter import Api
+from restkit import Resource, ConnectionPool, BasicAuth
+import json
 
-def fhash(self):
-    return self.id
+pool = ConnectionPool(max_connections=5)
+#auth = BasicAuth("username", "password")
 
-def fcmp(self, other):
-    """self < other, zero if self == other, a positive integer if self >
-    other. """
-    if self.id < other.id:
-        return -1
-    if self.id == other.id:
-        return 0
-    if self.id > other.id:
-        return 1
+class TwitterSocialGraph(Resource):
+
+    def __init__(self,  pool_instance=None, **kwargs):
+        friends_url = "http://api.twitter.com/1/"
+        super(TwitterSocialGraph, self).__init__(friends_url, follow_redirect=True,
+                                            max_follow_redirect=10,
+                                            pool_instance=pool_instance,
+                                            **kwargs)
+
+    def GetFollowers(self, id):
+        """TODO: if followers > 5000, this won't work"""
+        followers = self.get('followers/ids/%s.json' % id, cursor=-1)
+        return followers['ids']
+
+    def GetFriends(self, id):
+        """TODO: if friends > 5000, this won't work"""
+        friends = self.get('friends/ids/%s.json' % id, cursor=-1)
+        return friends['ids']
+
+    def request(self, *args, **kwargs):
+        resp = super(TwitterSocialGraph, self).request(*args, **kwargs)
+        return json.loads(resp.body)
 
 
-def patch_user():
-    import twitter
-    twitter.User.__hash__ = fhash
-    twitter.User.__cmp__ = fcmp
+thesocial = TwitterSocialGraph(pool)
