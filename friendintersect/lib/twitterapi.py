@@ -48,7 +48,7 @@ class TwitterUsers(Resource):
 
         people = []
         for ids in id_chunks:
-            people.append(self.get('lookup.json', user_id=','.join(map(str,ids))))
+            people += (self.get('lookup.json', user_id=','.join(map(str,ids))))
         return people
 
     def request(self, *args, **kwargs):

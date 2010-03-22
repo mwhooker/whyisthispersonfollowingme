@@ -72,7 +72,11 @@ class IntersectsController(BaseController):
         if 'paste.testing_variables' in request.environ:
             request.environ['paste.testing_variables']['intersects'] = intersects
 
-        return json.dumps(intersects)
+        if format == 'json':
+            return json.dumps(intersects)
+        if format == 'html':
+            c.intersects = intersects
+            return render('intersects.mako')
 
         
 
