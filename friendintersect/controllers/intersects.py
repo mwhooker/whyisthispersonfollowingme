@@ -4,11 +4,22 @@ from pylons import url, config, request, response, session, tmpl_context as c
 from pylons.controllers.util import abort, redirect_to
 
 from friendintersect.lib.base import BaseController, render
-from friendintersect.lib.twitterapi import api
+from friendintersect.lib import twitterapi; twitterapi.patch_user()
+import twitter
 
 import json
 
+api = twitter.Api(username=config.get('twitter.username'),
+                  password=config.get('twitter.password'))
+
+
 log = logging.getLogger(__name__)
+
+class TwitterUserEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, twitter.User):
+            return obj.AsDict()
+        return json.JSONEncoder.default(self, obj)
 
 class IntersectsController(BaseController):
     """REST Controller styled on the Atom Publishing Protocol"""
@@ -57,10 +68,10 @@ class IntersectsController(BaseController):
 
         my_friends = set(api.GetFriends(id))
         my_followers = set(api.GetFollowers(id))
+        print my_followers
 
         their_friends = set(api.GetFriends(their_id))
         #their_follows = api.GetFollowers(their_id)
-
 
         FFM = their_friends.intersection(my_followers)
         FIF = their_friends.intersection(my_friends)
@@ -70,7 +81,7 @@ class IntersectsController(BaseController):
         if 'paste.testing_variables' in request.environ:
             request.environ['paste.testing_variables']['intersects'] = intersects
 
-        return json.dumps(intersects)
+        return TwitterUserEncoder().encode(intersects)
         
         
 

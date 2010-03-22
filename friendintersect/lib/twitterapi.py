@@ -15,8 +15,7 @@ def fcmp(self, other):
         return 1
 
 
-api = Api(username=config.get('twitter.username'),
-                  password=config.get('twitter.password'))
-
-api.__hash__ = fhash
-api.__fcmp__ = fcmp
+def patch_user():
+    import twitter
+    twitter.User.__hash__ = fhash
+    twitter.User.__cmp__ = fcmp
