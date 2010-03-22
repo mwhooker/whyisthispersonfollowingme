@@ -19,10 +19,12 @@ friendintersect/config/middleware.py
 friendintersect/config/routing.py
 friendintersect/controllers/__init__.py
 friendintersect/controllers/error.py
+friendintersect/controllers/intersects.py
 friendintersect/lib/__init__.py
 friendintersect/lib/app_globals.py
 friendintersect/lib/base.py
 friendintersect/lib/helpers.py
+friendintersect/lib/twitterapi.py
 friendintersect/model/__init__.py
 friendintersect/public/bg.png
 friendintersect/public/favicon.ico
@@ -31,3 +33,4 @@ friendintersect/public/pylons-logo.gif
 friendintersect/tests/__init__.py
 friendintersect/tests/test_models.py
 friendintersect/tests/functional/__init__.py
+friendintersect/tests/functional/test_intersects.py
