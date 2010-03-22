@@ -1,0 +1,5 @@
+   * add remaining API requests to debug output
+   * cache requests
+   * beautify templates
+   * proper http responses
+   * reorganize twitterapi (bring the instantiation out into another module)
