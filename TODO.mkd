@@ -1,6 +1,5 @@
 in general order of importance
    * add "Their followers I follow"
-   * add remaining API requests to debug output
    * cache requests
    * beautify templates
    * proper http responses
