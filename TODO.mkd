@@ -1,5 +1,4 @@
 in general order of importance
-   * add "Their followers I follow"
    * cache requests
    * beautify templates
    * proper http responses
