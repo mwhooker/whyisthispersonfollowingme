@@ -13,7 +13,7 @@
     <li>${person['screen_name']}</li>
 % endfor
 </ul>
-<h2>FFI (The followers I follow)</h2>
+<h2>FFI (Their followers I follow)</h2>
 <ul>
 % for person in c.intersects['FFI']:
     <li>${person['screen_name']}</li>
