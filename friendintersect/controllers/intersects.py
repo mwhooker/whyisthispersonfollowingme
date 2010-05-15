@@ -8,6 +8,8 @@ from friendintersect.lib.twitterapi import thesocial, peeps, nolimits
 
 import json
 
+from restkit.errors import ResourceNotFound
+
 
 log = logging.getLogger(__name__)
 
@@ -27,18 +29,24 @@ class IntersectsController(BaseController):
         if their_id is None:
             abort(400)
 
-        my_friends = set(thesocial.GetFriends(id))
-        my_followers = set(thesocial.GetFollowers(id))
+        try:
+            my_friends = set(thesocial.GetFriends(id))
+            my_followers = set(thesocial.GetFollowers(id))
 
-        their_friends = set(thesocial.GetFriends(their_id))
-        their_followers = set(thesocial.GetFollowers(their_id))
+            their_friends = set(thesocial.GetFriends(their_id))
+            their_followers = set(thesocial.GetFollowers(their_id))
+        except ResourceNotFound, r:
+            abort(404)
 
         FFM = their_friends.intersection(my_followers)
         FIF = their_friends.intersection(my_friends)
         FFI = their_followers.intersection(my_friends)
+        their_friends_following_me_I_dont_follow = FFM.difference(my_friends)
 
         intersects = {'FFM': peeps.Lookup(list(FFM)), 'FIF':
-                      peeps.Lookup(list(FIF)), 'FFI': peeps.Lookup(list(FFI))}
+                      peeps.Lookup(list(FIF)), 'FFI': peeps.Lookup(list(FFI)),
+                      'TFFMIDF':
+                      peeps.Lookup(list(their_friends_following_me_I_dont_follow))}
 
         log.info("remaining requests: %s" % nolimits.get())
 

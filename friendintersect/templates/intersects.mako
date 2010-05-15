@@ -19,5 +19,11 @@
     <li>${person['screen_name']}</li>
 % endfor
 </ul>
+<h2>TFFMIDF:</h2>
+<ul>
+% for person in c.intersects['TFFMIDF']:
+    <li><a href="http://twitter.com/${person['screen_name']}">${person['screen_name']}</a></li>
+% endfor
+</ul>
 </body>
 </html>
